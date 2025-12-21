@@ -1,2 +1,32 @@
 /.zerodream-temp
 /ZeroWrt
+
+# 系统文件
+.DS_Store
+*.swp
+*.swo
+*~
+
+# 临时脚本和帮助文档（开发时使用，不需要提交）
+*说明.md
+*指南.md
+*方法.md
+*方案.md
+*Token*.md
+*SSH*.sh
+*SSL*.md
+*VPN*.md
+*推送*.md
+*执行*.md
+*检查*.sh
+*修复*.sh
+*一键*.txt
+*完成*.md
+
+# SSH 密钥错误文件
+eval "$(ssh-agent -s)"
+eval "$(ssh-agent -s)".pub
+
+# 临时脚本
+fix-ssl.sh
+push-to-github.sh
