@@ -20,3 +20,4 @@ config internal 'languages'
 # 设置默认主题为 Argon
 config internal 'themes'
 	option default 'argon'
+

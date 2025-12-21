@@ -48,3 +48,4 @@ echo "2. 访问 https://github.com/settings/keys"
 echo "3. 点击 'New SSH key'，粘贴公钥"
 echo "4. 然后执行：ssh-add ~/.ssh/id_ed25519"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
