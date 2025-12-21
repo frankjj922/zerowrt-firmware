@@ -1,0 +1,131 @@
+name: Build ZeroWrt
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360  # 6小时超时（编译可能需要更长时间）
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ZeroWrt-Firmware-IPQ60XX-WiFi_NO-251221042559  # 使用指定分支
+        submodules: recursive
+    
+    - name: Setup Build Environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential ccache ecj fastjar file g++ gawk gettext git \
+          java-propose-classpath libelf-dev libncurses5-dev libncursesw5-dev libssl-dev \
+          python3 python3-dev python3-distutils python3-setuptools rsync subversion \
+          swig time xsltproc zlib1g-dev
+    
+    - name: Setup ccache
+      uses: actions/cache@v3
+      with:
+        path: ~/.ccache
+        key: ${{ runner.os }}-ccache-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-
+    
+    - name: Update Feeds
+      run: |
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+    
+    - name: Apply Custom Configuration
+      run: |
+        # 创建配置目录
+        mkdir -p files/etc/config
+        mkdir -p files/etc/uci-defaults
+        mkdir -p files/etc/nginx/conf.d
+        
+        # 应用配置文件（如果存在）
+        if [ -d "config" ]; then
+          cp -r config/* files/
+        fi
+        
+        # 运行配置脚本（如果存在）
+        if [ -f "script/apply-config.sh" ]; then
+          chmod +x script/apply-config.sh
+          ./script/apply-config.sh
+        fi
+    
+    - name: Configure Build
+      run: |
+        make defconfig
+        
+        # 基础工具
+        echo "CONFIG_PACKAGE_naiveproxy=y" >> .config
+        echo "CONFIG_PACKAGE_btop=y" >> .config
+        echo "CONFIG_PACKAGE_automount=y" >> .config
+        
+        # LuCI 主题
+        echo "CONFIG_PACKAGE_luci-theme-openmptcprouter=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-routerich=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-spectra=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-openwrt=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-material3=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-alpha=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-argon=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-edge=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-design=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-teleofis=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-lightblue=y" >> .config
+        echo "CONFIG_PACKAGE_luci-theme-openwrt-2020=y" >> .config
+        
+        # iStoreOS 主题
+        echo "CONFIG_PACKAGE_luci-theme-opencash=y" >> .config
+        
+        # LuCI 应用
+        echo "CONFIG_PACKAGE_luci-app-parentcontrol=y" >> .config
+        echo "CONFIG_PACKAGE_luci-app-netdata=y" >> .config
+        echo "CONFIG_PACKAGE_luci-app-subconverter=y" >> .config
+        echo "CONFIG_PACKAGE_luci-app-store=y" >> .config
+        echo "CONFIG_PACKAGE_luci-app-ddns-go=y" >> .config
+        
+        # 互联网工具
+        echo "CONFIG_PACKAGE_luci-app-passwall=y" >> .config
+        echo "CONFIG_PACKAGE_luci-app-homeproxy=y" >> .config
+        echo "CONFIG_PACKAGE_luci-app-openclash=y" >> .config
+        
+        # Netdata
+        echo "CONFIG_PACKAGE_netdata=y" >> .config
+        
+        # Nginx Web服务器
+        echo "CONFIG_PACKAGE_nginx=y" >> .config
+        echo "CONFIG_PACKAGE_nginx-mod-luci=y" >> .config
+        
+        # IPv6 支持
+        echo "CONFIG_PACKAGE_ipv6helper=y" >> .config
+        
+        make defconfig
+    
+    - name: Download Dependencies
+      run: make download -j$(nproc)
+    
+    - name: Build Firmware
+      run: make -j$(nproc) V=s
+      env:
+        CCACHE_DIR: ~/.ccache
+    
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: firmware
+        path: bin/targets/**/*.bin
+        retention-days: 7
+    
+    - name: Upload Packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: packages
+        path: bin/packages/**
+        retention-days: 7

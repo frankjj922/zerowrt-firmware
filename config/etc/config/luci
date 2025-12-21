@@ -1,0 +1,22 @@
+config core 'main'
+	option resourcebase '/luci-static/resources'
+	option mediaurlbase '/luci-static/openwrt.org'
+
+config internal 'themes'
+	option Bootstrap '/luci-static/bootstrap'
+	option Argon '/luci-static/argon'
+	option OpenWrt '/luci-static/openwrt.org'
+
+config internal 'sauth'
+	option sessionpath '/tmp/luci-sessions'
+	option sessiontime '3600'
+
+config internal 'ccache'
+	option enable '1'
+
+config internal 'languages'
+	option zh_cn '简体中文'
+
+# 设置默认主题为 Argon
+config internal 'themes'
+	option default 'argon'
