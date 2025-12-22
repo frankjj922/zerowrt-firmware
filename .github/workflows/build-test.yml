@@ -47,8 +47,8 @@ jobs:
     uses: ./.github/workflows/zerowrt-core.yml
     secrets: inherit
     with:
-      # 测试模式
-      WRT_TEST: true
+      # 测试模式（设为 false 以产出 release）
+      WRT_TEST: false
       # 是否仅生成配置
       WRT_ONLY_CONFIG: ${{inputs.ONLY_CONFIG || false}} # 为自动编译设置默认值
       # 编译配置
