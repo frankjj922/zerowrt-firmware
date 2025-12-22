@@ -28,9 +28,6 @@ jobs:
       matrix:
         CONFIG: [
           IPQ60XX-WiFi_NO,
-          IPQ60XX-WiFi_YES,
-          IPQ807X-WiFi_NO,
-          IPQ807X-WiFi_YES,
         ]
         SOURCE: [VIKINGYFY/immortalwrt]
         BRANCH: [main]
@@ -60,7 +57,7 @@ jobs:
       # 默认 WiFi 密码
       WRT_WORD: 12345678
       # 默认地址
-      WRT_IP: 192.168.10.1
+      WRT_IP: 192.168.50.2
       # 默认密码，仅供提示，修改无效
       WRT_PW: 无
 
