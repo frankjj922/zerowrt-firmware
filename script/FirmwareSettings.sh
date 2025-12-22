@@ -51,10 +51,11 @@ sed -i "s/option DirectInterface '.*'/option DirectInterface ''/g" ./package/net
 if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
 	# 无 WiFi 配置调整 Q6 大小
 	if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
-		DTS_PATH="./target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/"
-		find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
-		echo "Successful: qualcommax set up nowifi"
-		echo ''
+		# DTS_PATH="./target/linux/qualcommax/files/arch/arm64/boot/dts/qcom/"
+		# find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
+		# echo "Successful: qualcommax set up nowifi"
+		# echo ''
+    :
 	fi
 fi
 
