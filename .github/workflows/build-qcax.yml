@@ -17,6 +17,15 @@ on:
         required: true
         type: boolean
         default: false
+      USE_CN_MIRROR:
+        description: '使用国内镜像（mirrors.immortalwrt.org）'
+        required: true
+        type: boolean
+        default: false
+      CUSTOM_DISTFEEDS_HOST:
+        description: '自定义包源域名（例如 https://mirrors.example.org/immortalwrt）'
+        required: false
+        type: string
 
 # CI 任务
 jobs:
@@ -57,9 +66,12 @@ jobs:
       # 默认 WiFi 密码
       WRT_WORD: 12345678
       # 默认地址
-      WRT_IP: 192.168.50.2
+      WRT_IP: 192.168.10.1
       # 默认密码，仅供提示，修改无效
       WRT_PW: 无
+      # 包源镜像切换（构建期）
+      WRT_DISTFEEDS_MIRROR: ${{ inputs.USE_CN_MIRROR && 'cn' }}
+      WRT_DISTFEEDS_HOST: ${{ inputs.CUSTOM_DISTFEEDS_HOST }}
 
   clean:
     name: clean-release

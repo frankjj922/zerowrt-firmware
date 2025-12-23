@@ -42,6 +42,12 @@ on:
       WRT_PW:
         required: true
         type: string
+      WRT_DISTFEEDS_MIRROR:
+        required: false
+        type: string
+      WRT_DISTFEEDS_HOST:
+        required: false
+        type: string
 
 # CI 环境
 env:
@@ -60,6 +66,8 @@ env:
   WRT_WORD: ${{inputs.WRT_WORD}}
   WRT_IP: ${{inputs.WRT_IP}}
   WRT_PW: ${{inputs.WRT_PW}}
+  WRT_DISTFEEDS_MIRROR: ${{inputs.WRT_DISTFEEDS_MIRROR}}
+  WRT_DISTFEEDS_HOST: ${{inputs.WRT_DISTFEEDS_HOST}}
 
 # CI 任务
 jobs:

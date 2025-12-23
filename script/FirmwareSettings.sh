@@ -11,12 +11,23 @@ echo ''
 
 # --------------------------------------------------
 
-# 修改默认主题
-sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
-# 修改 immortalwrt.lan 关联 IP
-sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
-# 添加编译日期标识
-sed -i "s/(\(luciversion || ''\))/(\1) + (' \/ ZeroWrt-$ZD_DATE')/g" $(find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js")
+WRT_HOST=${WRT_HOST:-zerowrt}
+THEME_DIR=$(find ./feeds ./package -maxdepth 4 -type d -iname "luci-theme-$WRT_THEME" 2>/dev/null | head -n1)
+
+collections_files=$(find ./feeds/luci/collections/ -type f -name "Makefile")
+[[ -n "$collections_files" && -n "$THEME_DIR" ]] && sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $collections_files
+flash_js_files=$(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
+[[ -n "$flash_js_files" ]] && sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $flash_js_files
+system_js_files=$(find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js")
+[[ -n "$system_js_files" ]] && sed -i "s/(\(luciversion || ''\))/(\1) + (' \/ ZeroWrt-$ZD_DATE')/g" $system_js_files
+distfeeds_conf="./openwrt/files/etc/opkg/distfeeds.conf"
+if [[ -f "$distfeeds_conf" ]]; then
+  if [[ "$WRT_DISTFEEDS_MIRROR" == "cn" ]]; then
+    sed -i "s#https://downloads.immortalwrt.org#https://mirrors.immortalwrt.org#g" "$distfeeds_conf"
+  elif [[ -n "$WRT_DISTFEEDS_HOST" ]]; then
+    sed -i "s#https://downloads.immortalwrt.org#${WRT_DISTFEEDS_HOST}#g" "$distfeeds_conf"
+  fi
+fi
 
 WIFI_SH=$(find ./target/linux/{mediatek/filogic,qualcommax}/base-files/etc/uci-defaults/ -type f -name "*set-wireless.sh" 2>/dev/null)
 WIFI_UC="./package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc"

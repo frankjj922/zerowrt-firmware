@@ -15,12 +15,14 @@ echo ''
 # ! 越重要配置越放在后面
 touch "$WRT_ConfigPath"
 
-# 添加主题配置
-cat >> "$WRT_ConfigPath" <<EOF
-# Luci Theme
-CONFIG_PACKAGE_luci-theme-$WRT_THEME=y
-CONFIG_PACKAGE_luci-app-$WRT_THEME-config=y
-EOF
+theme_dir=$(find ./feeds ./package -maxdepth 4 -type d -iname "luci-theme-$WRT_THEME" 2>/dev/null | head -n1)
+config_dir=$(find ./feeds ./package -maxdepth 4 -type d -iname "luci-app-$WRT_THEME-config" 2>/dev/null | head -n1)
+if [[ -n "$WRT_THEME" && -n "$theme_dir" ]]; then
+  echo "CONFIG_PACKAGE_luci-theme-$WRT_THEME=y" >>"$WRT_ConfigPath"
+fi
+if [[ -n "$config_dir" ]]; then
+  echo "CONFIG_PACKAGE_luci-app-$WRT_THEME-config=y" >>"$WRT_ConfigPath"
+fi
 echo 'Successful: addLuciThemeConfig'
 echo ''
 
